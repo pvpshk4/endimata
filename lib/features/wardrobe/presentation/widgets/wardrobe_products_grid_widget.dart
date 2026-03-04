@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:zilant_look/common/domain/entities/clothing_item_entity.dart';
+import 'package:endimata/common/domain/entities/clothing_item_entity.dart';
 
 class WardrobeProductsGridWidget extends StatelessWidget {
   final List<ClothingItemEntity> items;

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:zilant_look/common/photo_upload/domain/entities/photo_entity.dart';
-import 'package:zilant_look/common/photo_upload/data/data_sources/remote/photo_remote_data_source.dart';
+import 'package:endimata/common/photo_upload/domain/entities/photo_entity.dart';
+import 'package:endimata/common/photo_upload/data/data_sources/remote/photo_remote_data_source.dart';
 import '../../domain/repositories/photo_repository.dart';
 
 class PhotoRepositoryImpl implements PhotoRepository {

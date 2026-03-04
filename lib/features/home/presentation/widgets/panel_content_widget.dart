@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:zilant_look/config/theme/app_colors.dart';
-import 'package:zilant_look/features/home/presentation/widgets/catalog_tab.dart';
-import 'package:zilant_look/features/home/presentation/widgets/wardrobe_tab.dart';
+import 'package:endimata/config/theme/app_colors.dart';
+import 'package:endimata/features/home/presentation/widgets/catalog_tab.dart';
+import 'package:endimata/features/home/presentation/widgets/wardrobe_tab.dart';
 import 'package:animations/animations.dart';
 
 class PanelContentWidget extends StatelessWidget {
@@ -20,6 +20,9 @@ class PanelContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final panelBg = theme.scaffoldBackgroundColor;
+
     return Column(
       children: [
         SizedBox(
@@ -29,7 +32,10 @@ class PanelContentWidget extends StatelessWidget {
               height: 5,
               width: 230,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 217, 217, 217),
+                color:
+                    theme.brightness == Brightness.dark
+                        ? Colors.white24
+                        : const Color.fromARGB(255, 217, 217, 217),
                 borderRadius: BorderRadius.circular(3),
               ),
             ),
@@ -37,9 +43,9 @@ class PanelContentWidget extends StatelessWidget {
         ),
         Expanded(
           child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+              color: panelBg,
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(24.0),
                 topRight: Radius.circular(24.0),
               ),
@@ -48,8 +54,8 @@ class PanelContentWidget extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    _buildTabButton('Каталог', 0),
-                    _buildTabButton('Гардероб', 1),
+                    _buildTabButton(context, 'Каталог', 0),
+                    _buildTabButton(context, 'Гардероб', 1),
                   ],
                 ),
                 Expanded(
@@ -83,8 +89,13 @@ class PanelContentWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTabButton(String title, int index) {
+  Widget _buildTabButton(BuildContext context, String title, int index) {
+    final theme = Theme.of(context);
+    final inactiveBg = theme.scaffoldBackgroundColor;
+    final inactiveTextColor =
+        theme.brightness == Brightness.dark ? Colors.white70 : Colors.black;
     bool isSelected = selectedTabIndex == index;
+
     return Expanded(
       child: GestureDetector(
         onTap: () => onTabSelected(index),
@@ -92,7 +103,7 @@ class PanelContentWidget extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primaryColor : Colors.white,
+            color: isSelected ? AppColors.primaryColor : inactiveBg,
             borderRadius:
                 index == 0
                     ? const BorderRadius.only(
@@ -111,7 +122,7 @@ class PanelContentWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontFamily: 'SFPro-Medium',
-                color: isSelected ? Colors.white : Colors.black,
+                color: isSelected ? Colors.white : inactiveTextColor,
               ),
             ),
           ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:zilant_look/common/domain/entities/clothing_item_entity.dart';
-import 'package:zilant_look/common/presentation/widgets/custom_scaffold.dart';
+import 'package:endimata/common/domain/entities/clothing_item_entity.dart';
+import 'package:endimata/common/presentation/widgets/custom_scaffold.dart';
 import '../bloc/wardrobe_bloc.dart';
 import '../bloc/wardrobe_event.dart';
 import '../bloc/wardrobe_state.dart';

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:zilant_look/common/AppData/data/models/photo_model.dart';
+import 'package:endimata/common/AppData/data/models/photo_model.dart';
 
 abstract class HomeState extends Equatable {
   final List<PhotoModel> catalogItems;

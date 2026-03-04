@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zilant_look/config/theme/app_colors.dart';
+import 'package:endimata/config/theme/app_colors.dart';
 
 class ApplyCheckbox extends StatelessWidget {
   final bool value;
@@ -20,12 +20,12 @@ class ApplyCheckbox extends StatelessWidget {
           onChanged: onChanged,
           activeColor: AppColors.primaryColor,
         ),
-        const Text(
+        Text(
           'Применить сразу после добавления',
           style: TextStyle(
             fontSize: 16,
             fontFamily: 'SFPro-Light',
-            color: Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],

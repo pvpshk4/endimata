@@ -52,7 +52,10 @@ class _CategorySelectorState extends State<CategorySelector> {
 
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black, width: 1),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.onSurface,
+          width: 1,
+        ),
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Column(
@@ -87,8 +90,8 @@ class _CategorySelectorState extends State<CategorySelector> {
                       fontSize: 17,
                       color:
                           _subSubcategory == null
-                              ? const Color.fromARGB(255, 100, 100, 100)
-                              : Colors.black,
+                              ? Theme.of(context).colorScheme.onSurfaceVariant
+                              : Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   Icon(
@@ -164,7 +167,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                         category,
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontFamily:
                               widget.expandedCategories[category] ?? false
                                   ? 'SFPro-Bold'
@@ -186,7 +189,11 @@ class _CategorySelectorState extends State<CategorySelector> {
               ),
             ),
             if (index < widget.categories.keys.length - 1)
-              const Divider(color: Colors.black, height: 1, thickness: 1),
+              Divider(
+                color: Theme.of(context).colorScheme.outline,
+                thickness: 1,
+                height: 1,
+              ),
             if (widget.expandedCategories[category] ?? false) ...[
               ..._buildSubcategoryOptions(category),
             ],
@@ -243,7 +250,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                         subcategory,
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontFamily:
                               widget.expandedSubcategories['$category-$subcategory'] ??
                                       false
@@ -266,7 +273,11 @@ class _CategorySelectorState extends State<CategorySelector> {
                 ),
               ),
             ),
-            const Divider(color: Colors.black, height: 1, thickness: 1),
+            Divider(
+              color: Theme.of(context).colorScheme.outline,
+              thickness: 1,
+              height: 1,
+            ),
             if (widget.expandedSubcategories['$category-$subcategory'] ??
                 false) ...[
               ..._buildSubSubcategoryOptions(category, subcategory),
@@ -312,9 +323,9 @@ class _CategorySelectorState extends State<CategorySelector> {
                       padding: const EdgeInsets.only(left: 52),
                       child: Text(
                         subSubcategory,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontFamily: 'SFPro-Light',
                         ),
                       ),
@@ -327,7 +338,11 @@ class _CategorySelectorState extends State<CategorySelector> {
                 ),
               ),
             ),
-            const Divider(color: Colors.black, height: 1, thickness: 1),
+            Divider(
+              color: Theme.of(context).colorScheme.outline,
+              thickness: 1,
+              height: 1,
+            ),
           ],
         ),
       );

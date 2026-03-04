@@ -42,15 +42,25 @@ class MainLayout extends StatelessWidget {
                   ? CustomBottomNavigationBar(
                     currentIndex: navigationShell.currentIndex,
                     onTap: (index) => _onItemTapped(context, index),
-                    backgroundColor: Colors.white,
                     activeTextColor: AppColors.primaryColor,
                     showCentralButton: shouldShowCentralButton,
+                    // Кнопка "Одежда" — старая логика
                     onCentralButtonTap: () {
                       showDialog(
                         context: context,
                         barrierDismissible: false,
                         builder: (BuildContext context) {
                           return CameraPage(isClothesUpload: true);
+                        },
+                      );
+                    },
+                    // Кнопка "Фото человека" — новая
+                    onAddHumanPhotoTap: () {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return CameraPage(isClothesUpload: false);
                         },
                       );
                     },

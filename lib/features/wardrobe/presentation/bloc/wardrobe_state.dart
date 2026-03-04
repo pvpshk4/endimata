@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:zilant_look/common/domain/entities/clothing_item_entity.dart';
+import 'package:endimata/common/domain/entities/clothing_item_entity.dart';
 
 abstract class WardrobeState extends Equatable {
   final List<String> categories;

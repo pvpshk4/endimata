@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:zilant_look/common/photo_upload/domain/entities/photo_entity.dart';
+import 'package:endimata/common/photo_upload/domain/entities/photo_entity.dart';
 
 abstract class PhotoUploadState extends Equatable {
   const PhotoUploadState();

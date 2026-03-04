@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_bloc.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_event.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_state.dart';
-import 'package:zilant_look/common/presentation/dialogs/permanent_delete_confirmation_dialog.dart';
-import 'package:zilant_look/common/presentation/dialogs/restore_confirmation_dialog.dart';
-import 'package:zilant_look/config/theme/app_colors.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_bloc.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_event.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_state.dart';
+import 'package:endimata/common/presentation/dialogs/permanent_delete_confirmation_dialog.dart';
+import 'package:endimata/common/presentation/dialogs/restore_confirmation_dialog.dart';
+import 'package:endimata/config/theme/app_colors.dart';
 import '../widgets/deleted_photo_fullscreen_sheet.dart';
 import '../widgets/photo_grid.dart';
 
@@ -15,6 +15,10 @@ class DeletedPhotosPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -29,27 +33,25 @@ class DeletedPhotosPage extends StatelessWidget {
               leading:
                   state.selectedDeletedPhotos.isNotEmpty
                       ? IconButton(
-                        icon: const Icon(Icons.close, color: Colors.black),
+                        icon: Icon(Icons.close, color: textColor),
                         onPressed:
                             () => context.read<AppDataBloc>().add(
                               ClearSelectionEvent(isDeletedPhotos: true),
                             ),
                       )
                       : IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.black),
+                        icon: Icon(Icons.arrow_back, color: textColor),
                         onPressed: () => Navigator.pop(context),
                       ),
-              title: const Text(
+              title: Text(
                 'Удалённые фото',
                 style: TextStyle(
                   fontSize: 20,
                   fontFamily: 'SFPro-Medium',
-                  color: Colors.black,
+                  color: textColor,
                 ),
               ),
               centerTitle: true,
-              backgroundColor: Colors.white,
-              elevation: 0,
               actions:
                   state.selectedDeletedPhotos.isNotEmpty
                       ? [
@@ -63,7 +65,7 @@ class DeletedPhotosPage extends StatelessWidget {
                               context.read<AppDataBloc>().add(
                                 SelectAllPhotosEvent(
                                   state.deletedPhotos
-                                      .map((photo) => photo.imageBase64)
+                                      .map((p) => p.imageBase64)
                                       .toList(),
                                   isDeletedPhotos: true,
                                 ),
@@ -103,19 +105,20 @@ class DeletedPhotosPage extends StatelessWidget {
                           );
                         }
                         if (state.deletedPhotos.isEmpty) {
-                          return const Center(
+                          return Center(
                             child: Text(
                               'Нет удалённых фотографий',
                               style: TextStyle(
                                 fontFamily: 'SFPro-Medium',
                                 fontSize: 18,
+                                color: textColor,
                               ),
                             ),
                           );
                         }
                         final photos =
                             state.deletedPhotos
-                                .map((photo) => photo.imageBase64)
+                                .map((p) => p.imageBase64)
                                 .toList();
                         return PhotoGrid(
                           photos: photos,
@@ -206,122 +209,107 @@ class DeletedPhotosPage extends StatelessWidget {
                     alignment: Alignment.bottomCenter,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                      child: Material(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.transparent,
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Card(
+                            elevation: 4.0,
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(color: textColor, width: 0.5),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            color: theme.scaffoldBackgroundColor,
+                            child: InkWell(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder:
+                                      (
+                                        dialogContext,
+                                      ) => PermanentDeleteConfirmationDialog(
+                                        onConfirm: () {
+                                          context.read<AppDataBloc>().add(
+                                            PermanentlyDeletePhotosEvent(
+                                              state.selectedDeletedPhotos
+                                                  .toList(),
+                                            ),
+                                          );
+                                          context.read<AppDataBloc>().add(
+                                            ClearSelectionEvent(
+                                              isDeletedPhotos: true,
+                                            ),
+                                          );
+                                          Navigator.pop(dialogContext);
+                                        },
+                                        onCancel:
+                                            () => Navigator.pop(dialogContext),
+                                      ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SvgPicture.asset(
+                                  'assets/icons/trash_can_icon.svg',
+                                  width: 26,
+                                  height: 26,
+                                  colorFilter: ColorFilter.mode(
+                                    textColor,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Card(
-                                elevation: 4.0,
+                          const SizedBox(width: 16.0),
+                          SizedBox(
+                            width: 325.0,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryColor,
                                 shape: RoundedRectangleBorder(
-                                  side: BorderSide(
-                                    color: Colors.black,
-                                    width: 0.5,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderRadius: BorderRadius.circular(25.0),
                                 ),
-                                color: Colors.white,
-                                child: InkWell(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (
-                                            dialogContext,
-                                          ) => PermanentDeleteConfirmationDialog(
-                                            onConfirm: () {
-                                              context.read<AppDataBloc>().add(
-                                                PermanentlyDeletePhotosEvent(
-                                                  state.selectedDeletedPhotos
-                                                      .toList(),
-                                                ),
-                                              );
-                                              context.read<AppDataBloc>().add(
-                                                ClearSelectionEvent(
-                                                  isDeletedPhotos: true,
-                                                ),
-                                              );
-                                              Navigator.pop(dialogContext);
-                                            },
-                                            onCancel:
-                                                () => Navigator.pop(
-                                                  dialogContext,
-                                                ),
-                                          ),
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SvgPicture.asset(
-                                      'assets/icons/trash_can_icon.svg',
-                                      width: 26,
-                                      height: 26,
-                                    ),
-                                  ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 18.0,
                                 ),
                               ),
-                              const SizedBox(width: 16.0),
-                              SizedBox(
-                                width: 325.0,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primaryColor,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(25.0),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 18.0,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (
-                                            dialogContext,
-                                          ) => RestoreConfirmationDialog(
-                                            onConfirm: () {
-                                              context.read<AppDataBloc>().add(
-                                                RestorePhotosEvent(
-                                                  state.selectedDeletedPhotos
-                                                      .toList(),
-                                                ),
-                                              );
-                                              context.read<AppDataBloc>().add(
-                                                ClearSelectionEvent(
-                                                  isDeletedPhotos: true,
-                                                ),
-                                              );
-                                              Navigator.pop(dialogContext);
-                                            },
-                                            onCancel:
-                                                () => Navigator.pop(
-                                                  dialogContext,
-                                                ),
-                                          ),
-                                    );
-                                  },
-                                  child: const Text(
-                                    'Восстановить',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontFamily: 'SFPro-Bold',
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder:
+                                      (
+                                        dialogContext,
+                                      ) => RestoreConfirmationDialog(
+                                        onConfirm: () {
+                                          context.read<AppDataBloc>().add(
+                                            RestorePhotosEvent(
+                                              state.selectedDeletedPhotos
+                                                  .toList(),
+                                            ),
+                                          );
+                                          context.read<AppDataBloc>().add(
+                                            ClearSelectionEvent(
+                                              isDeletedPhotos: true,
+                                            ),
+                                          );
+                                          Navigator.pop(dialogContext);
+                                        },
+                                        onCancel:
+                                            () => Navigator.pop(dialogContext),
+                                      ),
+                                );
+                              },
+                              child: const Text(
+                                'Восстановить',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontFamily: 'SFPro-Bold',
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   );

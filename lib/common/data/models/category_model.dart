@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:zilant_look/common/domain/entities/category_entity.dart';
+import 'package:endimata/common/domain/entities/category_entity.dart';
 
 class CategoryModel extends CategoryEntity {
   const CategoryModel({required super.id, required super.category});

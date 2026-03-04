@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:zilant_look/common/photo_upload/domain/entities/photo_entity.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_bloc.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_event.dart';
+import 'package:endimata/common/photo_upload/domain/entities/photo_entity.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_bloc.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_event.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'photo_upload_event.dart';
 import 'photo_upload_state.dart';
 import 'dart:convert';
@@ -20,6 +21,7 @@ class PhotoUploadBloc extends Bloc<PhotoUploadEvent, PhotoUploadState> {
   PhotoUploadBloc(this._appDataBloc) : super(PhotoUploadInitialState()) {
     on<SetUploadTypeEvent>(_onSetUploadType);
     on<TakePhotoFromCameraEvent>(_onTakePhotoFromCamera);
+    on<TakePhotoFromCameraWithFileEvent>(_onTakePhotoFromCameraWithFile);
     on<ChoosePhotoFromGalleryEvent>(_onChoosePhotoFromGallery);
     on<CancelPhotoUploadEvent>(_onCancelPhotoUpload);
     on<SelectCategoryEvent>(_onSelectCategory);
@@ -39,6 +41,11 @@ class PhotoUploadBloc extends Bloc<PhotoUploadEvent, PhotoUploadState> {
     Emitter<PhotoUploadState> emit,
   ) async {
     try {
+      final status = await Permission.camera.request();
+      if (!status.isGranted) {
+        emit(const PhotoUploadFailureState('Нет доступа к камере'));
+        return;
+      }
       final pickedFile = await _picker.pickImage(source: ImageSource.camera);
       if (pickedFile != null) {
         _selectedImage = File(pickedFile.path);
@@ -53,11 +60,27 @@ class PhotoUploadBloc extends Bloc<PhotoUploadEvent, PhotoUploadState> {
     }
   }
 
+  Future<void> _onTakePhotoFromCameraWithFile(
+    TakePhotoFromCameraWithFileEvent event,
+    Emitter<PhotoUploadState> emit,
+  ) async {
+    _selectedImage = File(event.filePath);
+    if (_isClothesUpload) {
+      emit(PhotoUploadAwaitingCategoryState(event.filePath));
+    } else {
+      emit(PhotoUploadPreviewState(event.filePath));
+    }
+  }
+
   Future<void> _onChoosePhotoFromGallery(
     ChoosePhotoFromGalleryEvent event,
     Emitter<PhotoUploadState> emit,
   ) async {
     try {
+      final status = await Permission.photos.request();
+      if (!status.isGranted) {
+        emit(const PhotoUploadFailureState('Нет доступа к галерее'));
+      }
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         _selectedImage = File(pickedFile.path);

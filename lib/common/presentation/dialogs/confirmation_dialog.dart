@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../config/theme/app_colors.dart';
 
 class ConfirmationDialog extends StatelessWidget {
@@ -14,7 +13,14 @@ class ConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final dialogBg = theme.scaffoldBackgroundColor;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final borderColor = isDark ? Colors.white24 : Colors.black;
+
     return Dialog(
+      backgroundColor: dialogBg,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 350.0, maxHeight: 226.0),
@@ -27,12 +33,16 @@ class ConfirmationDialog extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Подтверждение удаления',
-                    style: TextStyle(fontSize: 16, fontFamily: 'SFPro-Medium'),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'SFPro-Medium',
+                      color: textColor,
+                    ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Colors.black),
+                    icon: Icon(Icons.close, color: textColor),
                     onPressed: onCancel,
                   ),
                 ],
@@ -42,13 +52,13 @@ class ConfirmationDialog extends StatelessWidget {
                 child: Center(
                   child: Container(
                     constraints: const BoxConstraints(maxWidth: 300.0),
-                    child: const Text(
+                    child: Text(
                       'Вы действительно хотите удалить выбранные объекты?',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'SFPro-Light',
-                        color: Colors.black,
+                        color: textColor,
                       ),
                     ),
                   ),
@@ -64,16 +74,16 @@ class ConfirmationDialog extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: onCancel,
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.black, width: 0.5),
+                        side: BorderSide(color: borderColor, width: 0.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Нет',
                         style: TextStyle(
                           fontFamily: 'SFPro-Light',
-                          color: Colors.black,
+                          color: textColor,
                           fontSize: 20,
                         ),
                       ),

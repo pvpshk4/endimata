@@ -19,6 +19,14 @@ class SetUploadTypeEvent extends PhotoUploadEvent {
 
 class TakePhotoFromCameraEvent extends PhotoUploadEvent {}
 
+class TakePhotoFromCameraWithFileEvent extends PhotoUploadEvent {
+  final String filePath;
+  const TakePhotoFromCameraWithFileEvent(this.filePath);
+
+  @override
+  List<Object?> get props => [filePath];
+}
+
 class ChoosePhotoFromGalleryEvent extends PhotoUploadEvent {}
 
 class CancelPhotoUploadEvent extends PhotoUploadEvent {}

@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zilant_look/common/data/models/clothing_item_model.dart';
+import 'package:endimata/common/data/models/clothing_item_model.dart';
 import '../../../../config/app_constants.dart';
 import '../../data/data_sources/remote/wardrobe_remote_data_source.dart';
 import 'wardrobe_event.dart';

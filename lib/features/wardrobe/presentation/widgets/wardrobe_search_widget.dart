@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:zilant_look/features/wardrobe/presentation/bloc/wardrobe_bloc.dart';
-import 'package:zilant_look/features/wardrobe/presentation/bloc/wardrobe_event.dart';
-import 'package:zilant_look/features/wardrobe/presentation/bloc/wardrobe_state.dart';
+import 'package:endimata/features/wardrobe/presentation/bloc/wardrobe_bloc.dart';
+import 'package:endimata/features/wardrobe/presentation/bloc/wardrobe_event.dart';
+import 'package:endimata/features/wardrobe/presentation/bloc/wardrobe_state.dart';
 
 class WardrobeSearchWidget extends StatefulWidget {
   final String basePath;
@@ -176,8 +176,10 @@ class _WardrobeSearchWidgetState extends State<WardrobeSearchWidget> {
                 },
                 hintText: 'Поиск',
                 leading: const Icon(Icons.search),
-                elevation: const WidgetStatePropertyAll(8),
-                backgroundColor: const WidgetStatePropertyAll(Colors.white),
+                elevation: const WidgetStatePropertyAll(4),
+                backgroundColor: WidgetStatePropertyAll(
+                  Theme.of(context).colorScheme.surface,
+                ),
                 shape: const WidgetStatePropertyAll(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -196,10 +198,12 @@ class _WardrobeSearchWidgetState extends State<WardrobeSearchWidget> {
           suggestionsBuilder: (context, controller) {
             if (_filteredSubSubcategories.isEmpty) {
               return [
-                const ListTile(
+                ListTile(
                   title: Text(
                     'Ничего не найдено',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ];

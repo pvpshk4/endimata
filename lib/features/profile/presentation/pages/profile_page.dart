@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_bloc.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_event.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_state.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_bloc.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_event.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_state.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:zilant_look/config/theme/app_colors.dart';
+import 'package:endimata/config/theme/app_colors.dart';
 import '../../../../common/presentation/dialogs/confirmation_dialog.dart';
 import '../widgets/photo_grid.dart';
+import '../widgets/settings_sheet.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final cardBg = isDark ? const Color(0xFF2C2C2C) : Colors.white;
+    final cardShadow = isDark ? Colors.black26 : Colors.grey.withAlpha(90);
+
     return BlocBuilder<AppDataBloc, AppDataState>(
       builder: (context, appDataState) {
         final allSelected =
@@ -27,24 +34,22 @@ class ProfilePage extends StatelessWidget {
             leading:
                 appDataState.selectedHumanPhotos.isNotEmpty
                     ? IconButton(
-                      icon: const Icon(Icons.close, color: Colors.black),
+                      icon: Icon(Icons.close, color: textColor),
                       onPressed:
                           () => context.read<AppDataBloc>().add(
                             ClearSelectionEvent(isDeletedPhotos: false),
                           ),
                     )
                     : null,
-            title: const Text(
+            title: Text(
               'Профиль',
               style: TextStyle(
                 fontSize: 20,
                 fontFamily: 'SFPro-Medium',
-                color: Colors.black,
+                color: textColor,
               ),
             ),
             centerTitle: true,
-            backgroundColor: Colors.white,
-            elevation: 0,
             actions:
                 appDataState.selectedHumanPhotos.isNotEmpty
                     ? [
@@ -73,7 +78,19 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ]
-                    : null,
+                    : [
+                      IconButton(
+                        icon: Icon(Icons.settings_outlined, color: textColor),
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (_) => const SettingsSheet(),
+                          );
+                        },
+                      ),
+                    ],
           ),
           body: SafeArea(
             child: Stack(
@@ -84,23 +101,25 @@ class ProfilePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Мои фото',
                           style: TextStyle(
                             fontSize: 20,
                             fontFamily: 'SFPro-SemiBold',
+                            color: textColor,
                           ),
                         ),
                         const SizedBox(height: 10),
                         if (appDataState.isLoading)
                           const Center(child: CircularProgressIndicator())
                         else if (appDataState.humanPhotos.isEmpty)
-                          const Center(
+                          Center(
                             child: Text(
                               'Нет фотографий',
                               style: TextStyle(
                                 fontFamily: 'SFPro-Light',
                                 fontSize: 18,
+                                color: textColor,
                               ),
                             ),
                           )
@@ -171,11 +190,11 @@ class ProfilePage extends StatelessWidget {
                             ),
                             margin: const EdgeInsets.symmetric(vertical: 7.0),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: cardBg,
                               borderRadius: BorderRadius.circular(10.0),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey.withAlpha(90),
+                                  color: cardShadow,
                                   spreadRadius: 2,
                                   blurRadius: 5,
                                   offset: const Offset(0, 2),
@@ -191,22 +210,23 @@ class ProfilePage extends StatelessWidget {
                                       'assets/icons/trash_can_icon.svg',
                                       width: 24,
                                       height: 24,
+                                      colorFilter: ColorFilter.mode(
+                                        textColor,
+                                        BlendMode.srcIn,
+                                      ),
                                     ),
                                     const SizedBox(width: 10),
-                                    const Text(
+                                    Text(
                                       'Удалённые',
                                       style: TextStyle(
                                         fontSize: 17,
                                         fontFamily: 'SFPro-SemiBold',
-                                        color: Colors.black,
+                                        color: textColor,
                                       ),
                                     ),
                                   ],
                                 ),
-                                const Icon(
-                                  Icons.arrow_forward,
-                                  color: Colors.black,
-                                ),
+                                Icon(Icons.arrow_forward, color: textColor),
                               ],
                             ),
                           ),
@@ -223,59 +243,46 @@ class ProfilePage extends StatelessWidget {
                         horizontal: 30.0,
                         vertical: 25.0,
                       ),
-                      child: Material(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.transparent,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 18.0),
                           ),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 18.0,
-                                ),
-                              ),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder:
-                                      (dialogContext) => ConfirmationDialog(
-                                        onConfirm: () {
-                                          context.read<AppDataBloc>().add(
-                                            DeletePhotosEvent(
-                                              appDataState.selectedHumanPhotos
-                                                  .toList(),
-                                            ),
-                                          );
-                                          context.read<AppDataBloc>().add(
-                                            ClearSelectionEvent(
-                                              isDeletedPhotos: false,
-                                            ),
-                                          );
-                                          Navigator.pop(dialogContext);
-                                        },
-                                        onCancel:
-                                            () => Navigator.pop(dialogContext),
-                                      ),
-                                );
-                              },
-                              child: const Text(
-                                'Удалить',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontFamily: 'SFPro-Bold',
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder:
+                                  (dialogContext) => ConfirmationDialog(
+                                    onConfirm: () {
+                                      context.read<AppDataBloc>().add(
+                                        DeletePhotosEvent(
+                                          appDataState.selectedHumanPhotos
+                                              .toList(),
+                                        ),
+                                      );
+                                      context.read<AppDataBloc>().add(
+                                        ClearSelectionEvent(
+                                          isDeletedPhotos: false,
+                                        ),
+                                      );
+                                      Navigator.pop(dialogContext);
+                                    },
+                                    onCancel:
+                                        () => Navigator.pop(dialogContext),
+                                  ),
+                            );
+                          },
+                          child: const Text(
+                            'Удалить',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontFamily: 'SFPro-Bold',
                             ),
                           ),
                         ),

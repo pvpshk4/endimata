@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_bloc.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_bloc.dart';
 import '../../../../common/AppData/presentation/bloc/app_data_event.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';

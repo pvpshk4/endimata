@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:zilant_look/features/home/domain/entities/home_content_entity.dart';
+import 'package:endimata/features/home/domain/entities/home_content_entity.dart';
 
 class HomeContentModel extends HomeContentEntity {
   const HomeContentModel({required super.title, required super.description});

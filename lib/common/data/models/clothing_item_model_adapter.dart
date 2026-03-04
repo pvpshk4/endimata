@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:zilant_look/common/data/models/clothing_item_model.dart';
+import 'package:endimata/common/data/models/clothing_item_model.dart';
 
 class ClothingItemModelAdapter extends TypeAdapter<ClothingItemModel> {
   @override

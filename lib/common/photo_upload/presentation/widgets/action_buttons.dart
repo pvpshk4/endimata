@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zilant_look/config/theme/app_colors.dart';
+import 'package:endimata/config/theme/app_colors.dart';
 
 class ActionButtons extends StatelessWidget {
   final String? subSubcategory;

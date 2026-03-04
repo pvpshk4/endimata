@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zilant_look/common/presentation/dialogs/confirmation_dialog.dart';
-import 'package:zilant_look/common/presentation/dialogs/restore_confirmation_dialog.dart';
-import 'package:zilant_look/config/theme/app_colors.dart';
-import 'package:zilant_look/features/profile/presentation/widgets/profile_photo_fullscreen_sheet.dart';
+import 'package:endimata/common/presentation/dialogs/confirmation_dialog.dart';
+import 'package:endimata/common/presentation/dialogs/restore_confirmation_dialog.dart';
+import 'package:endimata/config/theme/app_colors.dart';
+import 'package:endimata/features/profile/presentation/widgets/profile_photo_fullscreen_sheet.dart';
 import '../../../../common/AppData/presentation/bloc/app_data_bloc.dart';
 import '../../../../common/AppData/presentation/bloc/app_data_event.dart';
 import '../../../../common/presentation/dialogs/permanent_delete_confirmation_dialog.dart';

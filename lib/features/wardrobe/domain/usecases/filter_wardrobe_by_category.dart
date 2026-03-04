@@ -1,5 +1,5 @@
 // filter_wardrobe_by_category.dart
-import 'package:zilant_look/common/domain/entities/clothing_item_entity.dart';
+import 'package:endimata/common/domain/entities/clothing_item_entity.dart';
 
 import '../repositories/wardrobe_repository.dart';
 

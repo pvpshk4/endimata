@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zilant_look/common/photo_upload/presentation/bloc/photo_upload_event.dart';
+import 'package:endimata/common/photo_upload/presentation/bloc/photo_upload_event.dart';
 import '../../../../config/app_constants.dart';
 import '../../../../core/resources/dialog_state.dart';
 import '../bloc/photo_upload_bloc.dart';
@@ -54,7 +54,7 @@ class _ClothesCategorySelectionPageState
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         child: BlocListener<PhotoUploadBloc, PhotoUploadState>(
           listener: (context, state) {
             if (state is PhotoUploadSuccessState) {

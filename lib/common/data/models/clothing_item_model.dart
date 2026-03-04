@@ -1,5 +1,5 @@
 // clothing_item_model.dart
-import 'package:zilant_look/common/domain/entities/clothing_item_entity.dart';
+import 'package:endimata/common/domain/entities/clothing_item_entity.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'clothing_item_model.g.dart';

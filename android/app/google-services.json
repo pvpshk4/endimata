@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "385117718811",
+    "project_id": "endimata-c7e11",
+    "storage_bucket": "endimata-c7e11.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385117718811:android:9195e592983bca0182ebbe",
+        "android_client_info": {
+          "package_name": "com.example.zilant_look"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "385117718811-k5fjkvnd8q8jm13fqq93um0f0jdugfso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv9eO6YLVFml-vvlJDcNaypKnyhMu_tds"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "385117718811-k5fjkvnd8q8jm13fqq93um0f0jdugfso.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "385117718811-uf6n06u67q2pjscj1em2h4mh95oa96mv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.zilantLook"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385117718811:android:74bb2bc92e82f99d82ebbe",
+        "android_client_info": {
+          "package_name": "com.pvpshk4.endimata"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "385117718811-uud7ktkhj5mrrmg6j1sb86olh80abouk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pvpshk4.endimata",
+            "certificate_hash": "dd196ac9096ece9313ae038427a4f4b158396205"
+          }
+        },
+        {
+          "client_id": "385117718811-k5fjkvnd8q8jm13fqq93um0f0jdugfso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv9eO6YLVFml-vvlJDcNaypKnyhMu_tds"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "385117718811-k5fjkvnd8q8jm13fqq93um0f0jdugfso.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "385117718811-uf6n06u67q2pjscj1em2h4mh95oa96mv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.zilantLook"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

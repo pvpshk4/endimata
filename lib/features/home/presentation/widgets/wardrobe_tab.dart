@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zilant_look/config/app_constants.dart';
-import 'package:zilant_look/features/home/presentation/bloc/home_bloc.dart';
-import 'package:zilant_look/features/home/presentation/bloc/home_event.dart';
-import 'package:zilant_look/features/home/presentation/bloc/home_state.dart';
+import 'package:endimata/config/app_constants.dart';
+import 'package:endimata/features/home/presentation/bloc/home_bloc.dart';
+import 'package:endimata/features/home/presentation/bloc/home_event.dart';
+import 'package:endimata/features/home/presentation/bloc/home_state.dart';
 import 'package:animations/animations.dart';
 
 class WardrobeTab extends StatelessWidget {

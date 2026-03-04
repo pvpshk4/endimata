@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zilant_look/config/theme/app_colors.dart';
+import 'package:endimata/config/theme/app_colors.dart';
 
 class UnderlinePainter extends CustomPainter {
   final Color color;
@@ -48,10 +48,10 @@ class WardrobeProductsFilterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const textStyle = TextStyle(
+    final textStyle = TextStyle(
       fontSize: 14,
       fontFamily: 'SFPro-Light',
-      color: Colors.black,
+      color: Theme.of(context).colorScheme.onSurface,
     );
 
     return Padding(
@@ -64,7 +64,7 @@ class WardrobeProductsFilterWidget extends StatelessWidget {
               bottom: 2,
               child: CustomPaint(
                 painter: UnderlinePainter(
-                  color: Colors.grey.shade300,
+                  color: Theme.of(context).colorScheme.onSurface,
                   thickness: 2,
                 ),
                 size: Size(MediaQuery.of(context).size.width - 2 * 20, 2),
@@ -101,7 +101,7 @@ class WardrobeProductsFilterWidget extends StatelessWidget {
                             color:
                                 isSelected
                                     ? AppColors.primaryColor
-                                    : Colors.transparent,
+                                    : Theme.of(context).colorScheme.onSurface,
                             thickness: 2,
                           ),
                           size: Size(textWidth, 2),

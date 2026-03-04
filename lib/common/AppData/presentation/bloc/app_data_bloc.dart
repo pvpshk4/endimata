@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zilant_look/common/AppData/domain/repositories/app_data_repository.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_event.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_state.dart';
+import 'package:endimata/common/AppData/domain/repositories/app_data_repository.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_event.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_state.dart';
 
 class AppDataBloc extends Bloc<AppDataEvent, AppDataState> {
   final AppDataRepository _repository;

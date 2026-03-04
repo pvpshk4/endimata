@@ -1,5 +1,5 @@
-import 'package:zilant_look/features/home/data/models/home_content_model.dart';
-import 'package:zilant_look/features/home/domain/repositories/home_repository.dart';
+import 'package:endimata/features/home/data/models/home_content_model.dart';
+import 'package:endimata/features/home/domain/repositories/home_repository.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
   @override

@@ -1,7 +1,7 @@
-import 'package:zilant_look/common/data/models/clothing_item_model.dart';
-import 'package:zilant_look/common/domain/entities/clothing_item_entity.dart';
-import 'package:zilant_look/features/wardrobe/data/data_sources/remote/wardrobe_remote_data_source.dart';
-import 'package:zilant_look/features/wardrobe/domain/repositories/wardrobe_repository.dart';
+import 'package:endimata/common/data/models/clothing_item_model.dart';
+import 'package:endimata/common/domain/entities/clothing_item_entity.dart';
+import 'package:endimata/features/wardrobe/data/data_sources/remote/wardrobe_remote_data_source.dart';
+import 'package:endimata/features/wardrobe/domain/repositories/wardrobe_repository.dart';
 
 class WardrobeRepositoryImpl implements WardrobeRepository {
   final WardrobeRemoteDataSource _remoteDataSource;

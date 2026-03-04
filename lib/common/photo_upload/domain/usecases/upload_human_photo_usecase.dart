@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:zilant_look/common/photo_upload/domain/entities/photo_entity.dart';
+import 'package:endimata/common/photo_upload/domain/entities/photo_entity.dart';
 import '../repositories/photo_repository.dart';
 
 class UploadHumanPhotoUsecase {

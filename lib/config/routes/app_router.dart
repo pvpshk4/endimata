@@ -1,13 +1,13 @@
 import 'package:go_router/go_router.dart';
-import 'package:zilant_look/common/presentation/layouts/main_layout.dart';
-import 'package:zilant_look/common/photo_upload/presentation/pages/clothes_category_selection_page.dart';
-import 'package:zilant_look/features/catalog/presentation/pages/catalog_page.dart';
-import 'package:zilant_look/features/home/presentation/pages/home_page.dart';
-import 'package:zilant_look/features/profile/presentation/pages/profile_page.dart';
-import 'package:zilant_look/features/profile/presentation/pages/deleted_photos_page.dart';
-import 'package:zilant_look/features/wardrobe/presentation/pages/wardrobe_page.dart';
-import 'package:zilant_look/features/wardrobe/presentation/pages/subcategories_page.dart';
-import 'package:zilant_look/features/wardrobe/presentation/pages/products_page.dart';
+import 'package:endimata/common/presentation/layouts/main_layout.dart';
+import 'package:endimata/common/photo_upload/presentation/pages/clothes_category_selection_page.dart';
+import 'package:endimata/features/catalog/presentation/pages/catalog_page.dart';
+import 'package:endimata/features/home/presentation/pages/home_page.dart';
+import 'package:endimata/features/profile/presentation/pages/profile_page.dart';
+import 'package:endimata/features/profile/presentation/pages/deleted_photos_page.dart';
+import 'package:endimata/features/wardrobe/presentation/pages/wardrobe_page.dart';
+import 'package:endimata/features/wardrobe/presentation/pages/subcategories_page.dart';
+import 'package:endimata/features/wardrobe/presentation/pages/products_page.dart';
 
 final GoRouter appRouter = GoRouter(
   routes: [

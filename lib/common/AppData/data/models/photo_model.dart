@@ -1,13 +1,16 @@
 import 'dart:convert';
-import 'package:zilant_look/common/photo_upload/domain/entities/photo_entity.dart';
+import 'package:endimata/common/photo_upload/domain/entities/photo_entity.dart';
 
 class PhotoModel extends PhotoEntity {
+  final String? storageUrl;
+
   const PhotoModel({
     required super.user_name,
     required super.image,
     required super.category,
     required super.subcategory,
     required super.sub_subcategory,
+    this.storageUrl,
   });
 
   Map<String, dynamic> toMap() {

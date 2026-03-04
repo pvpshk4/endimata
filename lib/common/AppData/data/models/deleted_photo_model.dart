@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:zilant_look/common/AppData/data/models/photo_model.dart';
+import 'package:endimata/common/AppData/data/models/photo_model.dart';
 
 part 'deleted_photo_model.g.dart';
 

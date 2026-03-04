@@ -19,8 +19,16 @@ class WardrobeSubcategoryWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
         margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.onSecondary,
+              offset: Offset(2, 4),
+              blurRadius: 3,
+              spreadRadius: 1,
+            ),
+          ],
         ),
         child: Text(
           title,

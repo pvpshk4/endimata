@@ -1,5 +1,5 @@
 import 'package:retrofit/retrofit.dart';
-import 'package:zilant_look/common/AppData/data/models/photo_model.dart';
+import 'package:endimata/common/AppData/data/models/photo_model.dart';
 import 'package:dio/dio.dart';
 
 part 'app_data_api_service.g.dart';

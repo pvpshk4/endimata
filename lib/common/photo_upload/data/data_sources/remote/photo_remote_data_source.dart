@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:zilant_look/common/data/models/photo_response.dart';
-import 'package:zilant_look/common/data/models/human_photo_response.dart';
+import 'package:endimata/common/data/models/photo_response.dart';
+import 'package:endimata/common/data/models/human_photo_response.dart';
 import 'dart:convert';
 
 import '../../../../AppData/data/data_sources/remote/app_data_api_service.dart';

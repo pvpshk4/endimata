@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:zilant_look/config/theme/app_colors.dart';
+import 'package:endimata/config/theme/app_colors.dart';
 
 class ProfilePhotoFullscreenSheet extends StatefulWidget {
   final String photo;
@@ -39,6 +39,11 @@ class _ProfilePhotoFullscreenSheetState
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final offset = screenHeight * 0.01;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final sheetBg = theme.scaffoldBackgroundColor;
+    final borderColor = isDark ? Colors.white24 : Colors.black;
+    final iconColor = isDark ? Colors.white70 : Colors.black;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.8,
@@ -46,9 +51,11 @@ class _ProfilePhotoFullscreenSheetState
       maxChildSize: 0.9,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+          decoration: BoxDecoration(
+            color: sheetBg,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(20.0),
+            ),
           ),
           child: SingleChildScrollView(
             controller: scrollController,
@@ -60,7 +67,7 @@ class _ProfilePhotoFullscreenSheetState
                     width: 230,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: AppColors.greyColor,
+                      color: isDark ? Colors.white24 : AppColors.greyColor,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -77,7 +84,10 @@ class _ProfilePhotoFullscreenSheetState
                       height: screenHeight * 0.5,
                       errorBuilder:
                           (context, error, stackTrace) => Container(
-                            color: AppColors.greyColor,
+                            color:
+                                isDark
+                                    ? const Color(0xFF2C2C2C)
+                                    : AppColors.greyColor,
                             height: screenHeight * 0.5,
                             child: const Icon(
                               Icons.broken_image,
@@ -96,13 +106,10 @@ class _ProfilePhotoFullscreenSheetState
                     children: [
                       Card(
                         shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                            color: Colors.black,
-                            width: 0.5,
-                          ),
+                          side: BorderSide(color: borderColor, width: 0.5),
                           borderRadius: BorderRadius.circular(10.0),
                         ),
-                        color: Colors.white,
+                        color: sheetBg,
                         child: InkWell(
                           onTap: widget.onDelete,
                           child: Padding(
@@ -111,8 +118,12 @@ class _ProfilePhotoFullscreenSheetState
                               'assets/icons/trash_can_icon.svg',
                               width: 24,
                               height: 24,
+                              colorFilter: ColorFilter.mode(
+                                iconColor,
+                                BlendMode.srcIn,
+                              ),
                               placeholderBuilder:
-                                  (context) => const Icon(
+                                  (context) => Icon(
                                     Icons.delete,
                                     color: Colors.red,
                                     size: 24,
@@ -145,6 +156,7 @@ class _ProfilePhotoFullscreenSheetState
                     ],
                   ),
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),

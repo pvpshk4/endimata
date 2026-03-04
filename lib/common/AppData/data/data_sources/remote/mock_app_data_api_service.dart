@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
-import 'package:zilant_look/common/AppData/data/data_sources/remote/app_data_api_service.dart';
-import 'package:zilant_look/common/AppData/data/models/deleted_photo_model.dart';
-import 'package:zilant_look/common/AppData/data/models/photo_model.dart';
+import 'package:endimata/common/AppData/data/data_sources/remote/app_data_api_service.dart';
+import 'package:endimata/common/AppData/data/models/deleted_photo_model.dart';
+import 'package:endimata/common/AppData/data/models/photo_model.dart';
 
 class MockAppDataApiService implements AppDataApiService {
   final Box<String> _humanPhotosBox;

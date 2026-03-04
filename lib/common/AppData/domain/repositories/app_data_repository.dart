@@ -1,5 +1,5 @@
-import 'package:zilant_look/common/AppData/data/models/deleted_photo_model.dart';
-import 'package:zilant_look/common/AppData/data/models/photo_model.dart';
+import 'package:endimata/common/AppData/data/models/deleted_photo_model.dart';
+import 'package:endimata/common/AppData/data/models/photo_model.dart';
 import '../../data/data_sources/remote/app_data_api_service.dart';
 import '../../data/data_sources/remote/mock_app_data_api_service.dart';
 

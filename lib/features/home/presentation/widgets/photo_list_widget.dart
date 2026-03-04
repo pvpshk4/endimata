@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zilant_look/common/AppData/presentation/bloc/app_data_bloc.dart';
-import 'package:zilant_look/config/theme/app_colors.dart';
-
-import '../../../../common/photo_upload/presentation/pages/camera_page.dart';
+import 'package:endimata/common/AppData/presentation/bloc/app_data_bloc.dart';
 
 class PhotoListWidget extends StatefulWidget {
   final VoidCallback onClose;
@@ -63,6 +60,23 @@ class _PhotoListWidgetState extends State<PhotoListWidget>
   @override
   Widget build(BuildContext context) {
     final photos = context.read<AppDataBloc>().state.humanPhotos;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Полупрозрачный нейтральный фон для обеих тем:
+    // тёмная — белый туман, светлая — серая дымка
+    final containerColor =
+        isDark
+            ? Colors.white.withOpacity(0.13)
+            : Colors.black.withOpacity(0.07);
+
+    final borderColor =
+        isDark
+            ? Colors.white.withOpacity(0.18)
+            : Colors.black.withOpacity(0.10);
+
+    final emptyTextColor = isDark ? Colors.white54 : Colors.black38;
+    final errorIconColor = isDark ? Colors.white38 : Colors.black26;
 
     return Positioned(
       top: 10,
@@ -74,74 +88,53 @@ class _PhotoListWidgetState extends State<PhotoListWidget>
             scale: _scaleAnimation,
             child: FadeTransition(
               opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: Container(
-                  height: 100,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withAlpha(100),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        height: 100,
-                        width:
-                            MediaQuery.of(context).size.width - (16 + 42 + 24),
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          itemCount: photos.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == photos.length) {
-                              return _buildAddPhotoButton(context);
-                            }
-                            final photo = photos[index];
-                            return _buildPhotoItem(photo, index);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              child: SlideTransition(position: _slideAnimation, child: child),
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildAddPhotoButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: InkWell(
-        onTap: () {
-          closeWidgetWithAnimation();
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return CameraPage(isClothesUpload: false);
-            },
-          );
-        },
         child: Container(
-          width: 70,
-          height: 90,
+          height: 100,
+          padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.primaryColor,
+            color: containerColor,
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: borderColor, width: 0.5),
           ),
-          child: const Icon(Icons.add, color: Colors.white, size: 30),
+          child:
+              photos.isEmpty
+                  ? SizedBox(
+                    width: MediaQuery.of(context).size.width - (16 + 42 + 24),
+                    child: Center(
+                      child: Text(
+                        'Нет фото',
+                        style: TextStyle(
+                          color: emptyTextColor,
+                          fontSize: 14,
+                          fontFamily: 'SFPro-Light',
+                        ),
+                      ),
+                    ),
+                  )
+                  : SizedBox(
+                    height: 100,
+                    width: MediaQuery.of(context).size.width - (16 + 42 + 24),
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      itemCount: photos.length,
+                      itemBuilder: (context, index) {
+                        final photo = photos[index];
+                        return _buildPhotoItem(photo, errorIconColor);
+                      },
+                    ),
+                  ),
         ),
       ),
     );
   }
 
-  Widget _buildPhotoItem(String base64Photo, int index) {
+  Widget _buildPhotoItem(String base64Photo, Color errorIconColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: InkWell(
@@ -162,7 +155,12 @@ class _PhotoListWidgetState extends State<PhotoListWidget>
             fit: BoxFit.cover,
             gaplessPlayback: true,
             errorBuilder: (context, error, stackTrace) {
-              return const Icon(Icons.error);
+              return Container(
+                width: 70,
+                height: 90,
+                color: Colors.transparent,
+                child: Icon(Icons.error, color: errorIconColor),
+              );
             },
           ),
         ),

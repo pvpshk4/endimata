@@ -1,4 +1,4 @@
-package com.example.zilant_look
+package com.pvpshk4.endimata
 
 import io.flutter.embedding.android.FlutterActivity
 
