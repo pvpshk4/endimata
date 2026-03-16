@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:endimata/common/photo_upload/domain/entities/photo_entity.dart';
 import 'package:endimata/common/AppData/presentation/bloc/app_data_bloc.dart';
 import 'package:endimata/common/AppData/presentation/bloc/app_data_event.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'photo_upload_event.dart';
 import 'photo_upload_state.dart';
 import 'dart:convert';
@@ -27,6 +31,38 @@ class PhotoUploadBloc extends Bloc<PhotoUploadEvent, PhotoUploadState> {
     on<SelectCategoryEvent>(_onSelectCategory);
     on<SavePhotoEvent>(_onSavePhoto);
     on<ResetPhotoUploadEvent>(_onResetPhotoUpload);
+  }
+
+  Future<Uint8List> _compressImage(File file) async {
+    final bytes = await file.readAsBytes();
+    final image = img.decodeImage(bytes);
+    if (image == null) return bytes;
+
+    img.Image resized = image;
+    if (image.width > 1080 || image.height > 1080) {
+      resized = img.copyResize(
+        image,
+        width: image.width > image.height ? 1080 : -1,
+        height: image.height > image.width ? 1080 : -1,
+      );
+    }
+
+    return Uint8List.fromList(img.encodeJpg(resized, quality: 85));
+  }
+
+  /// Получает реальный username пользователя.
+  /// Приоритет: flask_user_id → Firebase UID → 'guest'
+  Future<String> _getUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    final flaskUserId = prefs.getString('flask_user_id');
+    if (flaskUserId != null && flaskUserId.isNotEmpty) {
+      return 'user_$flaskUserId';
+    }
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser != null) {
+      return firebaseUser.uid;
+    }
+    return 'guest';
   }
 
   void _onSetUploadType(
@@ -80,6 +116,7 @@ class PhotoUploadBloc extends Bloc<PhotoUploadEvent, PhotoUploadState> {
       final status = await Permission.photos.request();
       if (!status.isGranted) {
         emit(const PhotoUploadFailureState('Нет доступа к галерее'));
+        return;
       }
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
@@ -127,8 +164,10 @@ class PhotoUploadBloc extends Bloc<PhotoUploadEvent, PhotoUploadState> {
 
     emit(PhotoUploadLoadingState());
     try {
-      final username = 'test_user';
-      final base64Image = base64Encode(await _selectedImage!.readAsBytes());
+      final username = await _getUsername();
+      final compressedBytes = await _compressImage(_selectedImage!);
+      final base64Image = base64Encode(compressedBytes);
+
       if (_isClothesUpload) {
         if (_category == null ||
             _subcategory == null ||

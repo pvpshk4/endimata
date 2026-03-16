@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:endimata/common/AppData/domain/repositories/app_data_repository.dart';
 
 abstract class AppDataEvent extends Equatable {
   const AppDataEvent();
@@ -11,11 +12,23 @@ class LoadAppDataEvent extends AppDataEvent {
   const LoadAppDataEvent();
 }
 
+/// Переключает репозиторий — используется при входе/выходе пользователя
+class UpdateRepositoryEvent extends AppDataEvent {
+  final AppDataRepository repository;
+  const UpdateRepositoryEvent(this.repository);
+
+  @override
+  List<Object?> get props => [repository];
+}
+
 class AddHumanPhotoEvent extends AppDataEvent {
   final String photoBase64;
   final String userName;
 
   const AddHumanPhotoEvent({required this.photoBase64, required this.userName});
+
+  @override
+  List<Object?> get props => [photoBase64, userName];
 }
 
 class AddWardrobeItemEvent extends AppDataEvent {
@@ -32,6 +45,15 @@ class AddWardrobeItemEvent extends AppDataEvent {
     required this.subcategory,
     required this.subSubcategory,
   });
+
+  @override
+  List<Object?> get props => [
+    fileBase64,
+    userName,
+    category,
+    subcategory,
+    subSubcategory,
+  ];
 }
 
 class LoadDeletedPhotosEvent extends AppDataEvent {

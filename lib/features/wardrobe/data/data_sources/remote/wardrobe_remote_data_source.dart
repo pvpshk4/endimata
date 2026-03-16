@@ -1,8 +1,8 @@
 import 'package:uuid/uuid.dart';
 import 'package:endimata/common/data/models/clothing_item_model.dart';
 import 'package:endimata/common/AppData/data/models/photo_model.dart';
-
 import '../../../../../common/AppData/data/data_sources/remote/app_data_api_service.dart';
+import '../../../../../common/AppData/data/data_sources/remote/flask_app_data_service.dart';
 
 abstract class WardrobeRemoteDataSource {
   Future<List<ClothingItemModel>> getWardrobeItems({
@@ -43,8 +43,11 @@ class WardrobeRemoteDataSourceImpl implements WardrobeRemoteDataSource {
 
   PhotoModel _convertClothingItemModelToPhotoModel(ClothingItemModel item) {
     return PhotoModel(
-      user_name: 'test_user',
-      image: item.imageUrl.split(',').last,
+      user_name: '',
+      image:
+          item.imageUrl.contains(',')
+              ? item.imageUrl.split(',').last
+              : item.imageUrl,
       category: item.category,
       subcategory: item.subcategory,
       sub_subcategory: item.subSubcategory,
@@ -101,9 +104,8 @@ class WardrobeRemoteDataSourceImpl implements WardrobeRemoteDataSource {
 
   @override
   Future<void> deleteClothingItem(String id) async {
-    throw UnimplementedError(
-      'Delete operation not supported in AppDataApiService',
-    );
+    // Используем deletePhoto из AppDataApiService
+    await _apiService.deletePhoto(id, 'wardrobe');
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:endimata/common/AppData/data/data_sources/remote/flask_app_data_service.dart';
 import 'package:endimata/common/theme/theme_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -7,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:endimata/common/AppData/data/data_sources/remote/app_data_api_service.dart';
 import 'package:endimata/common/AppData/data/data_sources/remote/mock_app_data_api_service.dart';
-import 'package:endimata/common/AppData/data/data_sources/remote/supabase_app_data_service.dart';
 import 'package:endimata/common/AppData/data/models/deleted_photo_model.dart';
 import 'package:endimata/common/AppData/data/models/photo_model.dart';
 import 'package:endimata/common/AppData/data/models/photo_model_adapter.dart';
@@ -88,14 +88,14 @@ Future<void> _initHive() async {
 // ──────────────────────────────────────────────────────────────
 
 void _initServices() {
-  // По умолчанию — Mock (Hive) для гостей
-  sl.registerSingleton<AppDataApiService>(_createMockService());
+  final mockService = _createMockService();
+  sl.registerSingleton<AppDataApiService>(mockService);
 
   sl.registerSingleton<PhotoRemoteDataSource>(
-    PhotoRemoteDataSourceImpl(apiService: sl<AppDataApiService>()),
+    PhotoRemoteDataSourceImpl(apiService: mockService),
   );
   sl.registerSingleton<WardrobeRemoteDataSource>(
-    WardrobeRemoteDataSourceImpl(sl<AppDataApiService>()),
+    WardrobeRemoteDataSourceImpl(mockService),
   );
 }
 
@@ -133,22 +133,23 @@ void _initBlocs() {
 }
 
 // ──────────────────────────────────────────────────────────────
-// AUTH LISTENER — переключение сервисов при входе/выходе
+// AUTH LISTENER
 // ──────────────────────────────────────────────────────────────
 
 void _initAuthListener() {
   sl<AuthBloc>().stream.listen((authState) async {
     if (authState is AuthAuthenticatedState) {
-      await _switchToSupabase(authState.user.id);
+      await _switchToFlask(authState.user.id);
     } else if (authState is AuthUnauthenticatedState) {
       _switchToMock();
     }
   });
 }
 
-Future<void> _switchToSupabase(String userId) async {
-  final supabaseService = SupabaseAppDataService(
-    userId,
+Future<void> _switchToFlask(String firebaseUserId) async {
+  print('🔄 Переключаемся на Flask, Firebase UID: $firebaseUserId');
+
+  final flaskService = FlaskAppDataService(
     humanPhotosBox: sl<Box<String>>(),
     wardrobeItemsBox: sl<Box<PhotoModel>>(instanceName: 'wardrobeItemsBox'),
     deletedPhotosBox: sl<Box<DeletedPhotoModel>>(
@@ -156,33 +157,21 @@ Future<void> _switchToSupabase(String userId) async {
     ),
   );
 
-  await supabaseService.syncFromSupabase();
+  // Получаем JWT токен
+  final token = await flaskService.refreshJwtTokenPublic();
+  print('🎟️ JWT токен: ${token != null ? "ПОЛУЧЕН" : "НЕ ПОЛУЧЕН"}');
 
-  _reregisterDataLayer(supabaseService);
+  // Создаём новый репозиторий с Flask сервисом
+  final newRepository = AppDataRepository(flaskService);
+
+  // Напрямую обновляем репозиторий в AppDataBloc — без пересоздания блока
+  sl<AppDataBloc>().updateRepository(newRepository);
 }
 
 void _switchToMock() {
-  _reregisterDataLayer(_createMockService());
-}
-
-void _reregisterDataLayer(AppDataApiService service) {
-  sl.unregister<WardrobeRepository>();
-  sl.unregister<AppDataRepository>();
-  sl.unregister<WardrobeRemoteDataSource>();
-  sl.unregister<PhotoRemoteDataSource>();
-
-  sl.registerSingleton<PhotoRemoteDataSource>(
-    PhotoRemoteDataSourceImpl(apiService: service),
-  );
-  sl.registerSingleton<WardrobeRemoteDataSource>(
-    WardrobeRemoteDataSourceImpl(service),
-  );
-  sl.registerSingleton<AppDataRepository>(AppDataRepository(service));
-  sl.registerSingleton<WardrobeRepository>(
-    WardrobeRepositoryImpl(remoteDataSource: sl<WardrobeRemoteDataSource>()),
-  );
-
-  sl<AppDataBloc>().add(const LoadAppDataEvent());
+  final mockService = _createMockService();
+  final newRepository = AppDataRepository(mockService);
+  sl<AppDataBloc>().updateRepository(newRepository);
 }
 
 // ──────────────────────────────────────────────────────────────

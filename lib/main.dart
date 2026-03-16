@@ -12,17 +12,11 @@ import 'package:endimata/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:endimata/features/wardrobe/presentation/bloc/wardrobe_bloc.dart';
 import 'package:endimata/firebase_options.dart';
 import 'package:endimata/injection_container.dart' as di;
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/routes/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await Supabase.initialize(
-    url: 'https://redwzoepozxnazdqrnzt.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlZHd6b2Vwb3p4bmF6ZHFybnp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1OTg0MDYsImV4cCI6MjA4NzE3NDQwNn0.yf_eUKu6tbtcSFAxfpYxjH9n-t4iMLdubRQHrzTieNY',
-  );
   await di.init();
   runApp(const MyApp());
 }

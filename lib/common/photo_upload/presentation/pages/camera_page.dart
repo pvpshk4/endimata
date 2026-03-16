@@ -42,9 +42,8 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+    if (_cameraController == null || !_cameraController!.value.isInitialized)
       return;
-    }
     if (state == AppLifecycleState.inactive) {
       _disposeCamera();
     } else if (state == AppLifecycleState.resumed && _isPermissionGranted) {
@@ -66,50 +65,35 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   Future<void> _checkAndRequestPermissions() async {
     final cameraStatus = await Permission.camera.request();
-    final photosStatus = await Permission.photos.request();
-
+    await Permission.photos.request();
     final granted = cameraStatus.isGranted;
-
-    if (!granted) {
-      if (cameraStatus.isPermanentlyDenied) {
-        _showSettingsDialog();
-      }
-    }
-
+    if (!granted && cameraStatus.isPermanentlyDenied) _showSettingsDialog();
     setState(() {
       _isPermissionGranted = granted;
       _isPermissionChecked = true;
     });
-
-    if (granted) {
-      await _initCamera();
-    }
+    if (granted) await _initCamera();
   }
 
   Future<void> _initCamera() async {
     try {
       _cameras = await availableCameras();
       if (_cameras.isEmpty) return;
-
       final backCamera = _cameras.firstWhere(
         (c) => c.lensDirection == CameraLensDirection.back,
         orElse: () => _cameras.first,
       );
-
       final controller = CameraController(
         backCamera,
         ResolutionPreset.high,
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.jpeg,
       );
-
       await controller.initialize();
-
       if (!mounted) {
         controller.dispose();
         return;
       }
-
       setState(() {
         _cameraController = controller;
         _isCameraInitialized = true;
@@ -122,12 +106,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   Future<void> _takePhoto() async {
     if (_isTakingPhoto ||
         _cameraController == null ||
-        !_cameraController!.value.isInitialized) {
+        !_cameraController!.value.isInitialized)
       return;
-    }
-
     setState(() => _isTakingPhoto = true);
-
     try {
       final XFile photo = await _cameraController!.takePicture();
       if (!mounted) return;
@@ -148,8 +129,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
           (context) => AlertDialog(
             title: const Text('Нужны разрешения'),
             content: const Text(
-              'Для съёмки фото необходим доступ к камере.\n\n'
-              'Пожалуйста, разрешите в настройках приложения.',
+              'Для съёмки фото необходим доступ к камере.\n\nПожалуйста, разрешите в настройках приложения.',
             ),
             actions: [
               TextButton(
@@ -176,12 +156,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
           children: [
             const Icon(Icons.no_photography, size: 64, color: Colors.white54),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Нет доступа к камере',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontSize: 18,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 18),
             ),
             const SizedBox(height: 12),
             TextButton(
@@ -202,20 +179,17 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final previewAspect = _cameraController!.value.aspectRatio;
-        return ClipRect(
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: SizedBox(
-              width: constraints.maxWidth,
-              height: constraints.maxWidth / previewAspect,
-              child: CameraPreview(_cameraController!),
-            ),
-          ),
-        );
-      },
+    // Правильное вертикальное отображение — как системная камера
+    return SizedBox.expand(
+      child: FittedBox(
+        fit: BoxFit.cover,
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: _cameraController!.value.previewSize!.height,
+          height: _cameraController!.value.previewSize!.width,
+          child: CameraPreview(_cameraController!),
+        ),
+      ),
     );
   }
 
@@ -240,9 +214,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
             showDialog(
               context: context,
               barrierDismissible: false,
-              builder: (BuildContext context) {
-                return HumanPhotoPreviewPage(imagePath: state.imagePath);
-              },
+              builder:
+                  (BuildContext context) =>
+                      HumanPhotoPreviewPage(imagePath: state.imagePath),
             );
           } else if (state is PhotoUploadResetState) {
             DialogState.setActiveDialog(ActiveDialog.none);
@@ -252,21 +226,19 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // ── Живое превью камеры ──────────────────────────────────────
             _buildCameraPreview(),
-
-            // ── Кнопка «Назад» ──────────────────────────────────────────
             Positioned(
               top: 40,
               left: 16,
               child: GestureDetector(
-                onTap: () {
-                  context.read<PhotoUploadBloc>().add(CancelPhotoUploadEvent());
-                },
+                onTap:
+                    () => context.read<PhotoUploadBloc>().add(
+                      CancelPhotoUploadEvent(),
+                    ),
                 child: SvgPicture.asset(
                   'assets/icons/arrow_back_circled.svg',
-                  width: 32,
-                  height: 32,
+                  width: 50,
+                  height: 50,
                   colorFilter: const ColorFilter.mode(
                     Colors.white,
                     BlendMode.srcIn,
@@ -274,8 +246,6 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                 ),
               ),
             ),
-
-            // ── Кнопка спуска затвора ────────────────────────────────────
             Positioned(
               bottom: 60,
               left: 0,
@@ -307,8 +277,6 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                 ),
               ),
             ),
-
-            // ── Кнопка «Галерея» ────────────────────────────────────────
             Positioned(
               bottom: 60,
               right: 40,
@@ -316,11 +284,10 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                 onTap: () async {
                   final status = await Permission.photos.request();
                   if (status.isGranted) {
-                    if (mounted) {
+                    if (mounted)
                       context.read<PhotoUploadBloc>().add(
                         ChoosePhotoFromGalleryEvent(),
                       );
-                    }
                   } else if (status.isPermanentlyDenied) {
                     _showSettingsDialog();
                   }

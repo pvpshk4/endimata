@@ -5,7 +5,8 @@ import 'package:endimata/common/AppData/presentation/bloc/app_data_event.dart';
 import 'package:endimata/common/AppData/presentation/bloc/app_data_state.dart';
 
 class AppDataBloc extends Bloc<AppDataEvent, AppDataState> {
-  final AppDataRepository _repository;
+  // НЕ final — чтобы можно было переключить на Flask сервис
+  AppDataRepository _repository;
   final SharedPreferences _prefs;
 
   AppDataBloc(this._repository, this._prefs) : super(const AppDataState()) {
@@ -21,7 +22,22 @@ class AppDataBloc extends Bloc<AppDataEvent, AppDataState> {
     on<PermanentlyDeletePhotosEvent>(_onPermanentlyDeletePhotos);
     on<RestorePhotosEvent>(_onRestorePhotos);
     on<SetSelectedPhotoEvent>(_onSetSelectedPhoto);
+    on<UpdateRepositoryEvent>(_onUpdateRepository);
 
+    add(const LoadAppDataEvent());
+  }
+
+  /// Переключает репозиторий (вызывается из injection_container при входе/выходе)
+  void updateRepository(AppDataRepository newRepository) {
+    add(UpdateRepositoryEvent(newRepository));
+  }
+
+  Future<void> _onUpdateRepository(
+    UpdateRepositoryEvent event,
+    Emitter<AppDataState> emit,
+  ) async {
+    _repository = event.repository;
+    // Перезагружаем данные с новым сервисом
     add(const LoadAppDataEvent());
   }
 
@@ -66,6 +82,8 @@ class AppDataBloc extends Bloc<AppDataEvent, AppDataState> {
     AddHumanPhotoEvent event,
     Emitter<AppDataState> emit,
   ) async {
+    print('📸 _onAddHumanPhoto вызван, userName: ${event.userName}');
+    print('📦 Текущий репозиторий: ${_repository.runtimeType}');
     await _repository.addHumanPhoto(event.photoBase64, event.userName);
     add(const LoadAppDataEvent());
   }
