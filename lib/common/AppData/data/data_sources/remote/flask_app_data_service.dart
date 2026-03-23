@@ -7,7 +7,7 @@ import 'package:endimata/common/AppData/data/data_sources/remote/app_data_api_se
 import 'package:endimata/common/AppData/data/models/deleted_photo_model.dart';
 import 'package:endimata/common/AppData/data/models/photo_model.dart';
 
-const String kServerBaseUrl = 'https://yummy-shrimps-type.loca.lt';
+const String kServerBaseUrl = 'https://light-carpets-stand.loca.lt';
 
 class FlaskAppDataService implements AppDataApiService {
   late final Dio _dio;

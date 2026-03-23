@@ -53,6 +53,8 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    // Гарантируем сброс DialogState при любом закрытии экрана
+    DialogState.setActiveDialog(ActiveDialog.none);
     WidgetsBinding.instance.removeObserver(this);
     _disposeCamera();
     super.dispose();
@@ -122,6 +124,12 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     }
   }
 
+  void _closeCamera() {
+    // Сбрасываем состояние и закрываем
+    DialogState.setActiveDialog(ActiveDialog.none);
+    context.read<PhotoUploadBloc>().add(CancelPhotoUploadEvent());
+  }
+
   void _showSettingsDialog() {
     showDialog(
       context: context,
@@ -179,7 +187,6 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       );
     }
 
-    // Правильное вертикальное отображение — как системная камера
     return SizedBox.expand(
       child: FittedBox(
         fit: BoxFit.cover,
@@ -195,124 +202,125 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.black,
-      insetPadding: EdgeInsets.zero,
-      child: BlocListener<PhotoUploadBloc, PhotoUploadState>(
-        listener: (context, state) {
-          if (state is PhotoUploadAwaitingCategoryState) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
+    return PopScope(
+      // Перехватываем системную кнопку назад
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          DialogState.setActiveDialog(ActiveDialog.none);
+        }
+      },
+      child: Dialog(
+        backgroundColor: Colors.black,
+        insetPadding: EdgeInsets.zero,
+        child: BlocListener<PhotoUploadBloc, PhotoUploadState>(
+          listener: (context, state) {
+            if (state is PhotoUploadAwaitingCategoryState) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => ClothesCategorySelectionPage(
+                        imagePath: state.imagePath,
+                      ),
+                ),
+              );
+            } else if (state is PhotoUploadPreviewState) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
                 builder:
-                    (context) => ClothesCategorySelectionPage(
-                      imagePath: state.imagePath,
-                    ),
-              ),
-            );
-          } else if (state is PhotoUploadPreviewState) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder:
-                  (BuildContext context) =>
-                      HumanPhotoPreviewPage(imagePath: state.imagePath),
-            );
-          } else if (state is PhotoUploadResetState) {
-            DialogState.setActiveDialog(ActiveDialog.none);
-            Navigator.of(context).pop();
-          }
-        },
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            _buildCameraPreview(),
-            Positioned(
-              top: 40,
-              left: 16,
-              child: GestureDetector(
-                onTap:
-                    () => context.read<PhotoUploadBloc>().add(
-                      CancelPhotoUploadEvent(),
-                    ),
-                child: SvgPicture.asset(
-                  'assets/icons/arrow_back_circled.svg',
-                  width: 50,
-                  height: 50,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white,
-                    BlendMode.srcIn,
+                    (BuildContext context) =>
+                        HumanPhotoPreviewPage(imagePath: state.imagePath),
+              );
+            } else if (state is PhotoUploadResetState) {
+              DialogState.setActiveDialog(ActiveDialog.none);
+              Navigator.of(context).pop();
+            }
+          },
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _buildCameraPreview(),
+              Positioned(
+                top: 40,
+                left: 16,
+                child: GestureDetector(
+                  onTap: _closeCamera,
+                  child: SvgPicture.asset(
+                    'assets/icons/arrow_back_circled.svg',
+                    width: 46,
+                    height: 46,
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              bottom: 60,
-              left: 0,
-              right: 0,
-              child: Center(
+              Positioned(
+                bottom: 60,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: GestureDetector(
+                    onTap:
+                        _isPermissionChecked && _isCameraInitialized
+                            ? _takePhoto
+                            : null,
+                    child:
+                        _isTakingPhoto
+                            ? const SizedBox(
+                              width: 72,
+                              height: 72,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                            : SvgPicture.asset(
+                              'assets/icons/camera_circle.svg',
+                              width: 72,
+                              height: 72,
+                              colorFilter: const ColorFilter.mode(
+                                Colors.white,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 60,
+                right: 40,
                 child: GestureDetector(
-                  onTap:
-                      _isPermissionChecked && _isCameraInitialized
-                          ? _takePhoto
-                          : null,
-                  child:
-                      _isTakingPhoto
-                          ? const SizedBox(
-                            width: 72,
-                            height: 72,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                          )
-                          : SvgPicture.asset(
-                            'assets/icons/camera_circle.svg',
-                            width: 72,
-                            height: 72,
-                            colorFilter: const ColorFilter.mode(
-                              Colors.white,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 60,
-              right: 40,
-              child: GestureDetector(
-                onTap: () async {
-                  final status = await Permission.photos.request();
-                  if (status.isGranted) {
-                    if (mounted)
-                      context.read<PhotoUploadBloc>().add(
-                        ChoosePhotoFromGalleryEvent(),
-                      );
-                  } else if (status.isPermanentlyDenied) {
-                    _showSettingsDialog();
-                  }
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.folder_outlined,
-                      color: Colors.white,
-                      size: 50,
-                    ),
-                    Text(
-                      'Галерея',
-                      style: TextStyle(
+                  onTap: () async {
+                    final status = await Permission.photos.request();
+                    if (status.isGranted) {
+                      if (mounted)
+                        context.read<PhotoUploadBloc>().add(
+                          ChoosePhotoFromGalleryEvent(),
+                        );
+                    } else if (status.isPermanentlyDenied) {
+                      _showSettingsDialog();
+                    }
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.folder_outlined,
                         color: Colors.white,
-                        fontSize: 17,
-                        fontFamily: 'SFPro-Light',
+                        size: 50,
                       ),
-                    ),
-                  ],
+                      Text(
+                        'Галерея',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontFamily: 'SFPro-Light',
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

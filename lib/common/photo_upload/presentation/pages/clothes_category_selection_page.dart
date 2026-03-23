@@ -53,115 +53,122 @@ class _ClothesCategorySelectionPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Theme.of(context).colorScheme.surface,
-        child: BlocListener<PhotoUploadBloc, PhotoUploadState>(
-          listener: (context, state) {
-            if (state is PhotoUploadSuccessState) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                DialogState.setActiveDialog(ActiveDialog.none);
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Фото успешно загружено'),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            } else if (state is PhotoUploadFailureState) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                DialogState.setActiveDialog(ActiveDialog.none);
-              });
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            } else if (state is PhotoUploadResetState) {
-              Navigator.of(context).pop();
-            }
-          },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 32.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        PhotoContainer(imagePath: widget.imagePath),
-                        const SizedBox(height: 24.0),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: CategorySelector(
-                            categories: categories,
-                            isExpanded: _isExpanded,
-                            expandedCategories: _expandedCategories,
-                            expandedSubcategories: _expandedSubcategories,
-                            onCategorySelected: (
-                              category,
-                              subcategory,
-                              subSubcategory,
-                            ) {
-                              setState(() {
-                                _category = category;
-                                _subcategory = subcategory;
-                                _subSubcategory = subSubcategory;
-                              });
-                            },
-                            onExpandChanged: (isExpanded) {
-                              setState(() {
-                                _isExpanded = isExpanded;
-                              });
-                            },
+      body: SafeArea(
+        child: Container(
+          color: Theme.of(context).colorScheme.surface,
+          child: BlocListener<PhotoUploadBloc, PhotoUploadState>(
+            listener: (context, state) {
+              if (state is PhotoUploadSuccessState) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  DialogState.setActiveDialog(ActiveDialog.none);
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Фото успешно загружено'),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              } else if (state is PhotoUploadFailureState) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  DialogState.setActiveDialog(ActiveDialog.none);
+                });
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.message)));
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              } else if (state is PhotoUploadResetState) {
+                Navigator.of(context).pop();
+              }
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 32.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          PhotoContainer(imagePath: widget.imagePath),
+                          const SizedBox(height: 24.0),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                            child: CategorySelector(
+                              categories: categories,
+                              isExpanded: _isExpanded,
+                              expandedCategories: _expandedCategories,
+                              expandedSubcategories: _expandedSubcategories,
+                              onCategorySelected: (
+                                category,
+                                subcategory,
+                                subSubcategory,
+                              ) {
+                                setState(() {
+                                  _category = category;
+                                  _subcategory = subcategory;
+                                  _subSubcategory = subSubcategory;
+                                });
+                              },
+                              onExpandChanged: (isExpanded) {
+                                setState(() {
+                                  _isExpanded = isExpanded;
+                                });
+                              },
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
+                // Нижняя панель с safe zone для кнопок
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 16.0,
+                    right: 16.0,
+                    top: 8.0,
+                    bottom: MediaQuery.of(context).padding.bottom + 16.0,
+                  ),
+                  child: Column(
+                    children: [
+                      ApplyCheckbox(
+                        value: _applyImmediately,
+                        onChanged: (value) {
+                          setState(() {
+                            _applyImmediately = value ?? false;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 8.0),
+                      ActionButtons(
+                        subSubcategory: _subSubcategory,
+                        onCancel: () {
+                          context.read<PhotoUploadBloc>().add(
+                            CancelPhotoUploadEvent(),
+                          );
+                        },
+                        onSave: () {
+                          context.read<PhotoUploadBloc>().add(
+                            SelectCategoryEvent(
+                              category: _category!,
+                              subcategory: _subcategory!,
+                              subSubcategory: _subSubcategory!,
+                            ),
+                          );
+                          context.read<PhotoUploadBloc>().add(
+                            SavePhotoEvent(context),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    ApplyCheckbox(
-                      value: _applyImmediately,
-                      onChanged: (value) {
-                        setState(() {
-                          _applyImmediately = value ?? false;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 8.0),
-                    ActionButtons(
-                      subSubcategory: _subSubcategory,
-                      onCancel: () {
-                        context.read<PhotoUploadBloc>().add(
-                          CancelPhotoUploadEvent(),
-                        );
-                      },
-                      onSave: () {
-                        context.read<PhotoUploadBloc>().add(
-                          SelectCategoryEvent(
-                            category: _category!,
-                            subcategory: _subcategory!,
-                            subSubcategory: _subSubcategory!,
-                          ),
-                        );
-                        context.read<PhotoUploadBloc>().add(
-                          SavePhotoEvent(context),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
