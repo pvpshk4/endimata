@@ -5,6 +5,7 @@ import 'package:endimata/config/app_constants.dart';
 import 'package:endimata/features/home/presentation/bloc/home_bloc.dart';
 import 'package:endimata/features/home/presentation/bloc/home_event.dart';
 import 'package:endimata/features/home/presentation/bloc/home_state.dart';
+import 'package:endimata/config/theme/app_colors.dart';
 import 'package:animations/animations.dart';
 
 class WardrobeTab extends StatelessWidget {
@@ -16,6 +17,7 @@ class WardrobeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Фильтры категорий
         BlocBuilder<HomeBloc, HomeState>(
           buildWhen:
               (previous, current) =>
@@ -36,7 +38,6 @@ class WardrobeTab extends StatelessWidget {
                     : [];
 
             final hasSubSubcategories = state.wardrobeSubSubcategory.isEmpty;
-
             final currentSelection =
                 state.wardrobeSubSubcategory.isNotEmpty
                     ? state.wardrobeSubSubcategory
@@ -122,7 +123,6 @@ class WardrobeTab extends StatelessWidget {
                           ),
                         );
                       }
-
                       if (hasSubSubcategories) {
                         final itemIndex =
                             index - (currentSelection != null ? 1 : 0);
@@ -166,7 +166,6 @@ class WardrobeTab extends StatelessWidget {
                           ),
                         );
                       }
-
                       return const SizedBox.shrink();
                     },
                   ),
@@ -175,42 +174,120 @@ class WardrobeTab extends StatelessWidget {
             );
           },
         ),
+
+        // Список одежды
         Expanded(
           child: BlocBuilder<HomeBloc, HomeState>(
             buildWhen:
                 (previous, current) =>
-                    previous.wardrobeItems != current.wardrobeItems,
+                    previous.wardrobeItems != current.wardrobeItems ||
+                    previous.tryOnStatus != current.tryOnStatus,
             builder: (context, state) {
-              return state.wardrobeItems.isEmpty
-                  ? const Center(child: Text('Гардероб пока пуст'))
-                  : ListView.builder(
-                    controller: scrollController,
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    itemCount: state.wardrobeItems.length,
-                    itemBuilder: (context, index) {
-                      final item = state.wardrobeItems[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.memory(
-                            base64Decode(item.image),
-                            width: 80,
-                            height: 100,
-                            fit: BoxFit.fitWidth,
-                            errorBuilder:
-                                (context, error, stackTrace) =>
-                                    const Icon(Icons.error),
+              if (state.wardrobeItems.isEmpty) {
+                return const Center(child: Text('Гардероб пока пуст'));
+              }
+
+              final isTryOnLoading = state.tryOnStatus == TryOnStatus.loading;
+
+              return ListView.builder(
+                controller: scrollController,
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                itemCount: state.wardrobeItems.length,
+                itemBuilder: (context, index) {
+                  final item = state.wardrobeItems[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                    child: GestureDetector(
+                      onTap:
+                          isTryOnLoading
+                              ? null // Блокируем пока идёт примерка
+                              : () {
+                                // Запускаем примерку
+                                context.read<HomeBloc>().add(
+                                  StartTryOnEvent(
+                                    clothImageBase64: item.image,
+                                    clothType: _getClothType(item.category),
+                                  ),
+                                );
+                              },
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.memory(
+                              base64Decode(item.image),
+                              width: 80,
+                              height: 100,
+                              fit: BoxFit.fitWidth,
+                              errorBuilder:
+                                  (context, error, stackTrace) =>
+                                      const Icon(Icons.error),
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                          // Иконка "примерить" поверх фото
+                          if (!isTryOnLoading)
+                            Positioned(
+                              bottom: 4,
+                              right: 4,
+                              child: Container(
+                                width: 22,
+                                height: 22,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primaryColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.person_outline,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   );
+                },
+              );
             },
           ),
         ),
       ],
     );
+  }
+
+  String _getClothType(String category) {
+    const lowerCategories = [
+      'брюки',
+      'джинсы',
+      'юбки',
+      'шорты',
+      'леггинсы',
+      'лосины',
+      'мини-юбки',
+      'миди-юбки',
+      'юбки-карандаш',
+    ];
+    const overallCategories = [
+      'платья',
+      'комбинезоны',
+      'ползунки',
+      'боди',
+      'пижамы',
+      'спортивные костюмы',
+      'комплекты',
+      'халаты',
+    ];
+
+    final lower = category.toLowerCase();
+
+    for (final cat in overallCategories) {
+      if (lower.contains(cat)) return 'overall';
+    }
+    for (final cat in lowerCategories) {
+      if (lower.contains(cat)) return 'lower';
+    }
+    return 'upper';
   }
 }

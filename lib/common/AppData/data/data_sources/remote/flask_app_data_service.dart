@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:endimata/common/utils/debug_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,7 +7,7 @@ import 'package:endimata/common/AppData/data/data_sources/remote/app_data_api_se
 import 'package:endimata/common/AppData/data/models/deleted_photo_model.dart';
 import 'package:endimata/common/AppData/data/models/photo_model.dart';
 
-const String kServerBaseUrl = 'https://light-carpets-stand.loca.lt';
+const String kServerBaseUrl = 'http://192.168.3.7:5000';
 
 class FlaskAppDataService implements AppDataApiService {
   late final Dio _dio;
@@ -29,6 +29,14 @@ class FlaskAppDataService implements AppDataApiService {
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 120),
         headers: {'bypass-tunnel-reminder': 'true'},
+      ),
+    );
+
+    _dio.interceptors.add(
+      LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        logPrint: (o) => print(o),
       ),
     );
 
@@ -163,6 +171,8 @@ class FlaskAppDataService implements AppDataApiService {
         print('📡 Отправляем с user_name: $userName');
       }
 
+      print('📏 Размер base64: ${cleanBase64.length} символов');
+      print('📦 requestData keys: ${requestData.keys.toList()}');
       final response = await _dio.post('/human/process', data: requestData);
       print('✅ Ответ сервера: ${response.statusCode}');
 
@@ -177,6 +187,10 @@ class FlaskAppDataService implements AppDataApiService {
           print('💾 Фото сохранено в кэш');
         }
       }
+    } on DioException catch (e) {
+      print('❌ Ошибка addHumanPhoto статус: ${e.response?.statusCode}');
+      print('❌ Тело ответа: ${e.response?.data}');
+      rethrow;
     } catch (e) {
       print('❌ Ошибка addHumanPhoto: $e');
       rethrow;
@@ -252,6 +266,55 @@ class FlaskAppDataService implements AppDataApiService {
       );
       await _wardrobeItemsBox.add(model);
     }
+  }
+
+  // ──────────────────────── TRYON ────────────────────────
+
+  Future<String?> startTryon({
+    required String personImageBase64,
+    required String clothImageBase64,
+    String clothType = 'upper',
+  }) async {
+    try {
+      final personClean =
+          personImageBase64.contains(',')
+              ? personImageBase64.split(',').last
+              : personImageBase64;
+      final clothClean =
+          clothImageBase64.contains(',')
+              ? clothImageBase64.split(',').last
+              : clothImageBase64;
+
+      final response = await _dio.post(
+        '/tryon/start',
+        data: {
+          'person_image': personClean,
+          'cloth_image': clothClean,
+          'cloth_type': clothType,
+        },
+      );
+
+      if (response.statusCode == 202) {
+        final taskId = response.data['task_id'] as String?;
+        print('✅ Примерка запущена, task_id: $taskId');
+        return taskId;
+      }
+    } catch (e) {
+      print('❌ Ошибка startTryon: $e');
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?> getTryonStatus(String taskId) async {
+    try {
+      final response = await _dio.get('/tryon/status/$taskId');
+      if (response.statusCode == 200) {
+        return Map<String, dynamic>.from(response.data);
+      }
+    } catch (e) {
+      print('❌ Ошибка getTryonStatus: $e');
+    }
+    return null;
   }
 
   // ──────────────────────── CATALOG ────────────────────────

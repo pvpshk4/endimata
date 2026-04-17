@@ -2,7 +2,6 @@ import 'package:uuid/uuid.dart';
 import 'package:endimata/common/data/models/clothing_item_model.dart';
 import 'package:endimata/common/AppData/data/models/photo_model.dart';
 import '../../../../../common/AppData/data/data_sources/remote/app_data_api_service.dart';
-import '../../../../../common/AppData/data/data_sources/remote/flask_app_data_service.dart';
 
 abstract class WardrobeRemoteDataSource {
   Future<List<ClothingItemModel>> getWardrobeItems({

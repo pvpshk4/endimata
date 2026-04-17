@@ -6,6 +6,7 @@ import '../../data/data_sources/remote/mock_app_data_api_service.dart';
 
 class AppDataRepository {
   final AppDataApiService _apiService;
+  AppDataApiService get apiService => _apiService;
 
   AppDataRepository(this._apiService);
 
@@ -22,6 +23,7 @@ class AppDataRepository {
   }
 
   Future<void> addHumanPhoto(String fileBase64, String userName) async {
+    print('🔍 apiService тип: ${_apiService.runtimeType}');
     await _apiService.addHumanPhoto(fileBase64, userName);
   }
 

@@ -136,7 +136,9 @@ class SettingsSheet extends StatelessWidget {
                               ),
                               Switch(
                                 value: themeState.isDark,
-                                activeThumbColor: AppColors.primaryColor,
+                                thumbColor: WidgetStatePropertyAll(
+                                  AppColors.primaryColor,
+                                ),
                                 onChanged: (_) {
                                   context.read<ThemeBloc>().add(
                                     ToggleThemeEvent(),

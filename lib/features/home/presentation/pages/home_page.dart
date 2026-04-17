@@ -1,3 +1,4 @@
+import 'package:endimata/features/home/presentation/widgets/tryon_overlay_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,6 +84,7 @@ class _HomePageState extends State<HomePage> {
         body: Stack(
           children: [
             BackgroundPhoto(),
+            const TryOnOverlayWidget(),
             Column(
               children: [
                 const SizedBox(height: 60),

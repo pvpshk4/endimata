@@ -42,8 +42,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (_cameraController == null || !_cameraController!.value.isInitialized)
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
+    }
     if (state == AppLifecycleState.inactive) {
       _disposeCamera();
     } else if (state == AppLifecycleState.resumed && _isPermissionGranted) {
@@ -108,8 +109,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   Future<void> _takePhoto() async {
     if (_isTakingPhoto ||
         _cameraController == null ||
-        !_cameraController!.value.isInitialized)
+        !_cameraController!.value.isInitialized) {
       return;
+    }
     setState(() => _isTakingPhoto = true);
     try {
       final XFile photo = await _cameraController!.takePicture();
@@ -291,10 +293,11 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   onTap: () async {
                     final status = await Permission.photos.request();
                     if (status.isGranted) {
-                      if (mounted)
+                      if (mounted) {
                         context.read<PhotoUploadBloc>().add(
                           ChoosePhotoFromGalleryEvent(),
                         );
+                      }
                     } else if (status.isPermanentlyDenied) {
                       _showSettingsDialog();
                     }

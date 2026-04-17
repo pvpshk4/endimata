@@ -1,6 +1,3 @@
-import 'package:dio/dio.dart';
-import 'package:endimata/common/AppData/data/data_sources/remote/flask_app_data_service.dart';
-
 // Статические категории — используются как fallback если сервер недоступен
 const Map<String, Map<String, List<String>>> categories = {
   'Женская одежда': {

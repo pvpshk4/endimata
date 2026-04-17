@@ -12,12 +12,20 @@ import 'package:endimata/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:endimata/features/wardrobe/presentation/bloc/wardrobe_bloc.dart';
 import 'package:endimata/firebase_options.dart';
 import 'package:endimata/injection_container.dart' as di;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'common/utils/debug_logger.dart';
 import 'config/routes/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.init();
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString(
+    'flask_jwt_token',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc3NTM5NjI2MiwianRpIjoiM2QxODZmNGMtZmE4NS00NjQxLWI0MzMtNWZjZmEzNjliNGRjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjIiLCJuYmYiOjE3NzUzOTYyNjIsImNzcmYiOiJiMzhjMGY2MS1mODcwLTRmNWQtODA0MS1lZmFiNjVkYmY2ZmIiLCJleHAiOjE3NzU0MjUwNjJ9.2Y-7wZp4NP7UXkiANhAFHokrbcyK6hmxXD8utRPenuk',
+  );
+  await prefs.setString('flask_user_id', '2');
   runApp(const MyApp());
 }
 
@@ -47,6 +55,42 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
             themeMode: themeState.themeMode,
+            builder: (context, child) {
+              return Stack(
+                children: [
+                  child ?? const SizedBox.shrink(),
+                  // Debug overlay
+                  Positioned(
+                    bottom: 80,
+                    left: 0,
+                    right: 0,
+                    child: ListenableBuilder(
+                      listenable: DebugLogger.instance,
+                      builder: (context, _) {
+                        final logs = DebugLogger.instance.logs;
+                        if (logs.isEmpty) return const SizedBox.shrink();
+                        return Container(
+                          color: Colors.black87,
+                          padding: const EdgeInsets.all(8),
+                          height: 200,
+                          child: ListView.builder(
+                            itemCount: logs.length,
+                            itemBuilder:
+                                (context, i) => Text(
+                                  logs[i],
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
           );
         },
       ),

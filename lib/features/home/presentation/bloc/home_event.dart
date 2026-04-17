@@ -63,3 +63,32 @@ class GoToPreviousEvent extends HomeEvent {
   @override
   List<Object?> get props => [level, isCatalogTab];
 }
+
+/// Запускает примерку выбранной вещи на фото человека
+class StartTryOnEvent extends HomeEvent {
+  final String clothImageBase64;
+  final String clothType;
+
+  const StartTryOnEvent({
+    required this.clothImageBase64,
+    this.clothType = 'upper',
+  });
+
+  @override
+  List<Object?> get props => [clothImageBase64, clothType];
+}
+
+/// Polling: проверяет статус задачи примерки
+class CheckTryOnStatusEvent extends HomeEvent {
+  final String taskId;
+
+  const CheckTryOnStatusEvent(this.taskId);
+
+  @override
+  List<Object?> get props => [taskId];
+}
+
+/// Сбрасывает результат примерки
+class ClearTryOnEvent extends HomeEvent {
+  const ClearTryOnEvent();
+}

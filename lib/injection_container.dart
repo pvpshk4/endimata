@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:endimata/common/AppData/data/data_sources/remote/flask_app_data_service.dart';
 import 'package:endimata/common/theme/theme_bloc.dart';
+import 'package:endimata/common/utils/debug_logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +14,6 @@ import 'package:endimata/common/AppData/data/models/photo_model.dart';
 import 'package:endimata/common/AppData/data/models/photo_model_adapter.dart';
 import 'package:endimata/common/AppData/domain/repositories/app_data_repository.dart';
 import 'package:endimata/common/AppData/presentation/bloc/app_data_bloc.dart';
-import 'package:endimata/common/AppData/presentation/bloc/app_data_event.dart';
 import 'package:endimata/common/photo_upload/data/data_sources/remote/photo_remote_data_source.dart';
 import 'package:endimata/common/photo_upload/presentation/bloc/photo_upload_bloc.dart';
 import 'package:endimata/features/auth/data/repositories/auth_repository_impl.dart';
@@ -88,14 +88,22 @@ Future<void> _initHive() async {
 // ──────────────────────────────────────────────────────────────
 
 void _initServices() {
-  final mockService = _createMockService();
-  sl.registerSingleton<AppDataApiService>(mockService);
+  final flaskService = FlaskAppDataService(
+    humanPhotosBox: sl<Box<String>>(),
+    wardrobeItemsBox: sl<Box<PhotoModel>>(instanceName: 'wardrobeItemsBox'),
+    deletedPhotosBox: sl<Box<DeletedPhotoModel>>(
+      instanceName: 'deletedPhotosBox',
+    ),
+  );
+
+  sl.registerSingleton<AppDataApiService>(flaskService);
+  sl.registerSingleton<FlaskAppDataService>(flaskService);
 
   sl.registerSingleton<PhotoRemoteDataSource>(
-    PhotoRemoteDataSourceImpl(apiService: mockService),
+    PhotoRemoteDataSourceImpl(apiService: flaskService),
   );
   sl.registerSingleton<WardrobeRemoteDataSource>(
-    WardrobeRemoteDataSourceImpl(mockService),
+    WardrobeRemoteDataSourceImpl(flaskService),
   );
 }
 
@@ -105,7 +113,7 @@ void _initServices() {
 
 void _initRepositories() {
   sl.registerSingleton<AppDataRepository>(
-    AppDataRepository(sl<AppDataApiService>()),
+    AppDataRepository(sl<FlaskAppDataService>()),
   );
   sl.registerSingleton<WardrobeRepository>(
     WardrobeRepositoryImpl(remoteDataSource: sl<WardrobeRemoteDataSource>()),
@@ -140,8 +148,6 @@ void _initAuthListener() {
   sl<AuthBloc>().stream.listen((authState) async {
     if (authState is AuthAuthenticatedState) {
       await _switchToFlask(authState.user.id);
-    } else if (authState is AuthUnauthenticatedState) {
-      _switchToMock();
     }
   });
 }

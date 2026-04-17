@@ -7,6 +7,7 @@ import 'package:endimata/common/AppData/presentation/bloc/app_data_state.dart';
 class AppDataBloc extends Bloc<AppDataEvent, AppDataState> {
   // НЕ final — чтобы можно было переключить на Flask сервис
   AppDataRepository _repository;
+  AppDataRepository get repository => _repository;
   final SharedPreferences _prefs;
 
   AppDataBloc(this._repository, this._prefs) : super(const AppDataState()) {
@@ -84,7 +85,12 @@ class AppDataBloc extends Bloc<AppDataEvent, AppDataState> {
   ) async {
     print('📸 _onAddHumanPhoto вызван, userName: ${event.userName}');
     print('📦 Текущий репозиторий: ${_repository.runtimeType}');
-    await _repository.addHumanPhoto(event.photoBase64, event.userName);
+    try {
+      await _repository.addHumanPhoto(event.photoBase64, event.userName);
+    } catch (e) {
+      print('❌ Ошибка в _onAddHumanPhoto: $e');
+      // Не падаем — просто логируем
+    }
     add(const LoadAppDataEvent());
   }
 
