@@ -1,16 +1,75 @@
-# endimata
+# Endimata
 
-A new Flutter project.
+Flutter-приложение цифрового гардероба.
 
-## Getting Started
+Позволяет загружать фото одежды, вести личный гардероб, просматривать каталог и управлять профилем. Использует Clean Architecture, BLoC, Firebase и Flask-бэкенд.
 
-This project is a starting point for a Flutter application.
+## Стек
 
-A few resources to get you started if this is your first Flutter project:
+| Слой | Технологии |
+|------|------------|
+| UI | Flutter, Material 3, go_router, flutter_hooks |
+| State management | flutter_bloc |
+| DI | get_it |
+| Local storage | Hive, shared_preferences |
+| Backend | Firebase Auth / Firestore / Storage + Flask (JWT) |
+| Network | dio, http |
+| Media | camera, image_picker, cached_network_image |
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Основные фичи
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Авторизация (Firebase + Google Sign-In)
+- Цифровой гардероб (wardrobe)
+- Загрузка фото (камера / галерея)
+- Профиль пользователя
+- Светлая / тёмная тема
+- Offline-кэш через Hive
+
+## Структура проекта
+
+lib/
+├── common/           # общие компоненты (тема, photo upload, AppData)
+├── config/           # роутинг и конфигурация
+├── core/             # базовые утилиты
+├── features/
+│   ├── auth/
+│   ├── catalog/
+│   ├── home/
+│   ├── profile/
+│   └── wardrobe/
+├── firebase_options.dart
+├── injection_container.dart
+└── main.dart
+
+## Быстрый старт
+
+### Требования
+
+- Flutter SDK ^3.7.0
+- Dart SDK
+- Android Studio / VS Code
+- Firebase-проект (уже настроен в репозитории)
+
+### Установка
+
+git clone https://github.com/pvpshk4/endimata.git
+cd endimata
+flutter pub get
+
+### Запуск
+
+flutter run
+
+## Архитектура
+
+Проект следует **Clean Architecture**:
+
+- `presentation` — BLoC, UI
+- `domain` — репозитории, use-cases
+- `data` — data sources (remote/local), модели
+
+Зависимости инжектятся через **get_it** (`injection_container.dart`).
+
+## Firebase
+
+Конфигурация лежит в `lib/firebase_options.dart` и `android/app/google-services.json`.
