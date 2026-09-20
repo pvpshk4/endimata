@@ -27,19 +27,19 @@ Flutter-приложение цифрового гардероба.
 
 ## Структура проекта
 
-lib/
-├── common/           # общие компоненты (тема, photo upload, AppData)
-├── config/           # роутинг и конфигурация
-├── core/             # базовые утилиты
-├── features/
-│   ├── auth/
-│   ├── catalog/
-│   ├── home/
-│   ├── profile/
-│   └── wardrobe/
-├── firebase_options.dart
-├── injection_container.dart
-└── main.dart
+- lib/
+- ├── common/           # общие компоненты (тема, photo upload, AppData)
+- ├── config/           # роутинг и конфигурация
+- ├── core/             # базовые утилиты
+- ├── features/
+- │   ├── auth/
+- │   ├── catalog/
+- │   ├── home/
+- │   ├── profile/
+- │   └── wardrobe/
+- ├── firebase_options.dart
+- ├── injection_container.dart
+- └── main.dart
 
 ## Быстрый старт
 
